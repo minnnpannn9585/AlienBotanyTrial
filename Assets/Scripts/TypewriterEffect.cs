@@ -20,7 +20,8 @@ public class TypewriterEffect : MonoBehaviour
     [Header("完成事件")]
     [SerializeField] private UnityEvent onTypingComplete;   // 打字完全结束时触发
 
-    public Button NextButton;
+    [Header("打字内容")]
+    public string content;
     
     private Coroutine typeCoroutine;
     private string fullText = "";
@@ -29,8 +30,8 @@ public class TypewriterEffect : MonoBehaviour
     /// 打字是否已经完整结束（未开始/进行中为 false，完整显示完成为 true）
     /// </summary>
     public bool IsTypingComplete { get; private set; }
-
-    public string content;
+    
+    
     private void Awake()
     {
         if (targetText == null)
@@ -39,13 +40,6 @@ public class TypewriterEffect : MonoBehaviour
 
     private void Start()
     {
-        onTypingComplete.AddListener(() =>
-        {
-            NextButton.onClick.AddListener(() =>
-            {
-                MainController.Instance.LoadMenu(2);
-            });
-        });
         // 玩家将成为一位生物学家，需要在神秘海岛中完成所有的生物采样，要保证自己的安全不要吃毒！  空点即可开始游戏
         StartTypewriting(content);
     }

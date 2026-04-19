@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// 自定义带 GameObject 参数的 UnityEvent，以便在 Inspector 中显示
@@ -24,10 +25,8 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public bool changeAlphaOnDrag = false;
     [Range(0.2f, 1f)]
     public float dragAlpha = 0.6f;
-
-    [Header("拖拽目标检测（按Tag）")]
-    [Tooltip("目标 Tag：拖拽到此 Tag 的 UI 上时触发事件（如 \"DropTarget\"）")]
-    public string targetTag = "DropTarget";
+    private string poisonoustargetTag = "Poisonous";
+    private string NonPoisonoustargetTag = "NonPoisonous";
     [Tooltip("是否检测父物体：如果为 true，会向上查找父物体是否带有目标 Tag")]
     public bool checkParent = true;
     [Tooltip("拖拽到目标上时触发的事件，参数为目标 GameObject")]
@@ -42,6 +41,7 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private int originalSiblingIndex;
 
     private GameObject ParentGameObject;
+    private LabelInformation _labelInformation;
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -71,12 +71,12 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     private void Start()
     {
+        _labelInformation = GetComponent<LabelInformation>();
         ParentGameObject = transform.parent.gameObject;
         // 示例：监听事件，打印目标名称（可在 Inspector 中绑定，也可代码添加）
         OnDropOnTarget.AddListener((target) =>
         {
             transform.SetParent(target.transform);
-            Debug.Log($"拖拽到了目标上：{target.name}");
         });
     }
 
@@ -133,7 +133,7 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             canvasGroup.alpha = originalAlpha;
 
         // 检测是否拖拽到了带有目标 Tag 的 UI 上，并获取目标对象
-        if (!string.IsNullOrEmpty(targetTag))
+        if (!string.IsNullOrEmpty(poisonoustargetTag))
         {
             GameObject target = GetTargetUnderPointer(eventData);
             if (target != null)
@@ -141,10 +141,6 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 OnDropOnTarget?.Invoke(target);
             }
         }
-
-        // 可选：恢复原始层级
-        // if (bringToFrontOnDrag && originalParent != null && transform.parent == originalParent)
-        //     transform.SetSiblingIndex(originalSiblingIndex);
     }
 
     /// <summary>
@@ -161,8 +157,16 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             if (go == null) continue;
 
             // 直接检查当前物体
-            if (go.CompareTag(targetTag))
+            if (go.CompareTag(poisonoustargetTag) || go.CompareTag(NonPoisonoustargetTag))
+            {
+                if (go.CompareTag(NonPoisonoustargetTag) && 
+                    _labelInformation.botanyType == BotanyPoisonousType.Poisonous)
+                    _labelInformation.IsPoisonous = true;
+                else
+                    _labelInformation.IsPoisonous = false;
                 return go;
+            }
+             
 
             // 检查父物体链
             if (checkParent)
@@ -170,7 +174,7 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 Transform parent = go.transform.parent;
                 while (parent != null)
                 {
-                    if (parent.CompareTag(targetTag))
+                    if (parent.CompareTag(poisonoustargetTag))
                         return parent.gameObject;
                     parent = parent.parent;
                 }
