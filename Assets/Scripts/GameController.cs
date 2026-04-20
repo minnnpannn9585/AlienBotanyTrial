@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using com.guanayao.Data;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     private ImageSpriteAnimation _imageSpriteAnimation;
-
-    [Header("植物列表")]
-    public List<Sprite> botanySprites;
+    [Header("关卡数据配置")]
+    public LevelConfigData levelConfigData;
+    [Header("当前关卡")] 
+    public LevelDataItem currentLevelDataItem;
     [Header("边界")]
     public Image botanyImage;
     [Header("结算弹窗")]
@@ -33,32 +35,33 @@ public class GameController : MonoBehaviour
     [Header("闪烁时间")]
     [Range(0,8)]
     public float poisonousTime = 0.5f;
+    
     // Start is called before the first frame update
     void Start()
     {
+        currentLevelDataItem = levelConfigData.LevelDataItems[currentTaskIndex];
         _imageSpriteAnimation = GetComponent<ImageSpriteAnimation>();
         FinishBtn.onClick.AddListener(() =>
         {
             NextTask();
         });
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    
+    /// <summary>
+    /// 下一个关卡
+    /// </summary>
     public void NextTask()
     {
         PoisonousCalculate();
         currentTaskIndex++;
-        if (currentTaskIndex >= botanySprites.Count)
+        if (currentTaskIndex >= levelConfigData.LevelDataItems.Count)
         {
             paymentPage.SetActive(true);
             return;
         }
-        botanyImage.sprite = botanySprites[currentTaskIndex];
+        // 获取当前关卡数据
+        currentLevelDataItem = levelConfigData.LevelDataItems[currentTaskIndex];
+        botanyImage.sprite = currentLevelDataItem.BotanyIcon;
         botanyImage.SetNativeSize();
         Vector2 newSize = botanyImage.GetComponent<RectTransform>().sizeDelta;
         botanyImage.GetComponent<RectTransform>().sizeDelta = new Vector2(newSize.x/2, newSize.y/2);
@@ -97,8 +100,6 @@ public class GameController : MonoBehaviour
             MainController.Instance.LoadMenu(4);
         }
     }
-
-    
     
     /// <summary>
     /// 一轮中毒结算

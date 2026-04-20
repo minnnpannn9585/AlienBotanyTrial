@@ -3204,7 +3204,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gameController: {fileID: 1367237434}
   _imageSpriteAnimation: {fileID: 1367237433}
-  dataConfig: {fileID: 11400000, guid: 13d7e2880e756e142ae0c31dc202b22d, type: 2}
   Left_Page: {fileID: 974711020}
   Right_Page: {fileID: 129133403}
   GameUICanvas: {fileID: 1367237428}
@@ -3213,6 +3212,11 @@ MonoBehaviour:
   boundaryImage: {fileID: 239297402}
   spawnParent: {fileID: 1073920742}
   objectRadius: 150
+  currentLevelDataItem:
+    LevelIndex: 0
+    name: 
+    BotanyIcon: {fileID: 0}
+    botanyTags: []
 --- !u!1 &1143749365
 GameObject:
   m_ObjectHideFlags: 0
@@ -4090,11 +4094,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f8de7e8ba985644cb39c3842258dff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  botanySprites:
-  - {fileID: 21300000, guid: ba985e2bf91aeb94b8f81c7f1274df5c, type: 3}
-  - {fileID: 21300000, guid: 074fb39ee0d7347408a3bcf0dc6cf6d8, type: 3}
-  - {fileID: 21300000, guid: 5e193c974f7aa6b4c806999c47efdb44, type: 3}
-  - {fileID: 21300000, guid: 5332fc8e36608da47933978e22e9db8c, type: 3}
+  levelConfigData: {fileID: 11400000, guid: e65ce7fcef1e443738649dde0bb56d03, type: 2}
+  currentLevelDataItem:
+    LevelIndex: 0
+    name: 
+    BotanyIcon: {fileID: 0}
+    botanyTags: []
   botanyImage: {fileID: 1073920743}
   paymentPage: {fileID: 1495510452}
   Poisonousthreshold: 2
@@ -4749,7 +4754,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
 --- !u!114 &1617561865
 MonoBehaviour:
   m_ObjectHideFlags: 0

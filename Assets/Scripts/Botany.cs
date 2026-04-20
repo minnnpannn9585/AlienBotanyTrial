@@ -1,20 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using com.guanayao.Data;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 public class Botany : MonoBehaviour
 {
+    [Header("游戏核心控制器")]
     public GameController _gameController;
     /// <summary>
     /// 处理动画脚本
     /// </summary>
     public ImageSpriteAnimation _imageSpriteAnimation;
-    
-    /// <summary>
-    /// 数据配置脚本
-    /// </summary>
-    public DataConfig dataConfig;
     /// <summary>
     /// 无毒卡槽位子
     /// </summary>
@@ -123,21 +120,18 @@ public class Botany : MonoBehaviour
     public Image boundaryImage;       // 用于限定范围的 Image（作为背景或区域指示）
     public Transform spawnParent;     // 生成物体的父物体（可选）
     public float objectRadius = 0.5f; // 物体半径（根据实际物体大小调整）
-
-
-    private BotanyDataList dataItemList;
     
+    public LevelDataItem currentLevelDataItem;
     void RandomGeneration()
     {
-
-        dataItemList = dataConfig.dataList[_gameController.currentTaskIndex];
+        currentLevelDataItem = _gameController.currentLevelDataItem;
         
         // 在 Image 范围内生成 10 个不重叠的物体
         List<GameObject> spawned = GenerateNonOverlapObjectsInImage(
             prefab: objectPrefab,
             parent: spawnParent,
             image: boundaryImage,
-            count: dataItemList.dataItemList.Count,
+            count: currentLevelDataItem.botanyTags.Count,
             radius: objectRadius,
             maxAttempts: 5000
         );
@@ -224,9 +218,10 @@ public class Botany : MonoBehaviour
                     float originalZ = prefab.transform.position.z;
                     Vector3 worldPosition = new Vector3(candidate.x, candidate.y, originalZ);
                     GameObject obj = Instantiate(prefab, worldPosition, Quaternion.identity, parent);
-                    BotanyDataItem dataItem = dataItemList.dataItemList[i];
+                    BotanyTagData dataItem = currentLevelDataItem.botanyTags[i];
                     LabelInformation labelInfo = obj.GetComponent<LabelInformation>();
-                    labelInfo.SetIcon(dataItem.botanyType, dataItem.sensoryType, dataItem.describe);
+                    labelInfo.SetIcon((BotanyPoisonousType)dataItem.botanyPoison,
+                        (SensoryType)dataItem.sensoryType,dataItem.chineseDescribe);
                     generatedObjects.Add(obj);
                     usedPositions.Add(candidate);
                     placed = true;
