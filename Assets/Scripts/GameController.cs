@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using com.guanayao.Data;
@@ -43,8 +44,15 @@ public class GameController : MonoBehaviour
         _imageSpriteAnimation = GetComponent<ImageSpriteAnimation>();
         FinishBtn.onClick.AddListener(() =>
         {
-            NextTask();
+            Debug.Log($"当前关卡：{GetFullyUnlock()}");
+            Debug.Log($"levelConfigData 当前关卡：{levelConfigData.LevelDataItems[currentTaskIndex].botanyTags.Count}");
+            if (GetFullyUnlock() == levelConfigData.LevelDataItems[currentTaskIndex].botanyTags.Count)
+            {
+                Botany.Instance.FinishBtnEvent();
+                NextTask();
+            }
         });
+        
     }
     
     /// <summary>
@@ -53,10 +61,13 @@ public class GameController : MonoBehaviour
     public void NextTask()
     {
         PoisonousCalculate();
+        LocalSave();
         currentTaskIndex++;
         if (currentTaskIndex >= levelConfigData.LevelDataItems.Count)
         {
-            paymentPage.SetActive(true);
+            // paymentPage.SetActive(true);
+            MainController.Instance.LoadMenu(4);
+            AudioController.Instance.PlayAudioClip(AudioType.Succeed);
             return;
         }
         // 获取当前关卡数据
@@ -128,12 +139,13 @@ public class GameController : MonoBehaviour
         }
 
         // 检查是否轻微中毒
-        if (poisonousCount >= 1)
+        if (poisonousCount == 1)
         {
             EnterPoisonous.DOFade(1f, 1f);
             EnterPoisonous.DOColor(Color.red, poisonousTime)
                 .SetEase(Ease.InOutSine)      // 建议使用平滑的缓动曲线，OutBack 回弹感较强
                 .SetLoops(-1, LoopType.Yoyo);  // -1 表示无限循环，Yoyo 表示来回往返
+            AudioController.Instance.PlayAudioClip(AudioType.Poisoning);
         }
         
         // 检查是否中毒
@@ -141,6 +153,7 @@ public class GameController : MonoBehaviour
         {
             // 中毒
             Debug.Log("中毒了");
+            AudioController.Instance.PlayAudioClip(AudioType.Lose);
             MainController.Instance.LoadMenu(5);
         }
 
@@ -151,5 +164,76 @@ public class GameController : MonoBehaviour
         }
 
         Debug.Log("poisonousCount:" + poisonousCount);
+    }
+    
+    [Header("关卡解锁数据")]
+    public LevelLockData levelLockData;
+    
+    /// <summary>
+    /// 解锁当前关卡的解锁菜单
+    /// </summary>
+    void LocalSave()
+    {
+        bool isAllNonPoisonous = false;
+        foreach (var item in GetFirstLevelChildren(Left_Page.transform.GetChild(0)))
+        {
+            LabelInformation temp = item.GetComponentInChildren<LabelInformation>();
+            if (temp != null)
+            {
+                if (item.GetComponentInChildren<LabelInformation>().botanyType == BotanyPoisonousType.NonPoisonous)
+                    isAllNonPoisonous = true;
+                else
+                {
+                    levelLockData.AllLevels[currentTaskIndex].IsLock = false;
+                    return;
+                }
+                   
+            }
+        }
+        foreach (var item in GetFirstLevelChildren(Right_Page.transform.GetChild(0)))
+        {
+            LabelInformation temp = item.GetComponentInChildren<LabelInformation>();
+            if (temp != null)
+            {
+                if (item.GetComponentInChildren<LabelInformation>().botanyType == BotanyPoisonousType.Poisonous)
+                    isAllNonPoisonous = true;
+                else
+                {
+                    levelLockData.AllLevels[currentTaskIndex].IsLock = false;
+                    return;
+                }
+            }
+        }
+        if (isAllNonPoisonous)
+        {
+            levelLockData.AllLevels[currentTaskIndex].IsLock = true;
+        }
+    }
+
+
+    /// <summary>
+    /// 获取卡槽已解锁数量
+    /// </summary>
+    /// <returns></returns>
+    int GetFullyUnlock()
+    {
+        int count = 0;
+        foreach (var item in GetFirstLevelChildren(Left_Page.transform.GetChild(0)))
+        {
+            LabelInformation temp = item.GetComponentInChildren<LabelInformation>();
+            if (temp != null)
+            {
+                count++;
+            }
+        }
+        foreach (var item in GetFirstLevelChildren(Right_Page.transform.GetChild(0)))
+        {
+            LabelInformation temp = item.GetComponentInChildren<LabelInformation>();
+            if (temp != null)
+            {
+                count++;
+            }
+        }
+        return count;
     }
 }

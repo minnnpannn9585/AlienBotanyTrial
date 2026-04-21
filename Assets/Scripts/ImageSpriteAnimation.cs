@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Events;  // 新增：支持 UnityEvent
+using UnityEngine.Events;
 
 /// <summary>
 /// 为 UGUI Image 组件提供帧动画控制：播放、暂停、重新播放、速率调节。
 /// 附加功能：播放时可对另一个单独的 Image 进行缩放动画（开始大小 -> 结束大小），与帧动画同步。
 /// 新增功能：动画播放完成时（非循环模式到达最后一帧并停止）触发 UnityEvent。
+/// 新增功能：动画开始播放时（包括首次启动、重新播放、暂停后恢复）触发 UnityEvent。
 /// </summary>
 [RequireComponent(typeof(Image))]
 public class ImageSpriteAnimation : MonoBehaviour
@@ -39,6 +40,8 @@ public class ImageSpriteAnimation : MonoBehaviour
     [Header("事件")]
     [Tooltip("动画播放完成时触发（仅非循环模式，到达最后一帧并停止时）")]
     public UnityEvent OnAnimationCompleted;
+    [Tooltip("动画开始播放时触发（包括：首次启动、重新播放、暂停后恢复、更换动画集后自动开始）")]
+    public UnityEvent OnAnimationStarted;
 
     private Image targetImage;           // 用于显示帧动画的 Image（当前物体）
     private bool isPlaying;
@@ -86,12 +89,30 @@ public class ImageSpriteAnimation : MonoBehaviour
             currentFrameIndex = 0;
             targetImage.sprite = sprites[0];
         }
-        isPlaying = playOnStart;
         currentFrameTime = 0f;
-        hasInvokedCompleted = false;   // 重置完成标志
+        hasInvokedCompleted = false;
 
-        // 初始化缩放动画（仅当启用且有独立目标时）
         InitializeScaleAnimation();
+
+        // ✅ 先添加事件监听
+        OnAnimationStarted.AddListener(() =>
+        {
+            AudioController.Instance.PlayGameRunAudio();
+        });
+        OnAnimationCompleted.AddListener(() =>
+        {
+            AudioController.Instance.StopGameRunAudio();
+        });
+
+        // ✅ 再根据 playOnStart 决定播放（此时监听器已就绪）
+        if (playOnStart)
+        {
+            Play();
+        }
+        else
+        {
+            isPlaying = false;
+        }
     }
 
     private void Update()
@@ -223,6 +244,7 @@ public class ImageSpriteAnimation : MonoBehaviour
 
     /// <summary>
     /// 播放动画（若动画已播放完毕且非循环，则自动从头开始）
+    /// 如果当前未在播放，则触发开始事件。
     /// </summary>
     public void Play()
     {
@@ -232,7 +254,11 @@ public class ImageSpriteAnimation : MonoBehaviour
         }
         else
         {
-            isPlaying = true;
+            if (!isPlaying)
+            {
+                isPlaying = true;
+                OnAnimationStarted?.Invoke();
+            }
         }
     }
 
@@ -246,6 +272,7 @@ public class ImageSpriteAnimation : MonoBehaviour
 
     /// <summary>
     /// 重新播放（重置到第一帧并开始播放，同时重置缩放动画和完成事件标志）
+    /// 会触发开始事件。
     /// </summary>
     public void Restart()
     {
@@ -265,6 +292,9 @@ public class ImageSpriteAnimation : MonoBehaviour
             lastProgress = 0f;
             scaleTargetImage.transform.localScale = startScale;
         }
+
+        // 触发动画开始事件
+        OnAnimationStarted?.Invoke();
     }
 
     /// <summary>
@@ -277,13 +307,13 @@ public class ImageSpriteAnimation : MonoBehaviour
     }
 
     /// <summary>
-    /// 动态更换动画帧集合（同时重置动画状态）
+    /// 动态更换动画帧集合（同时重置动画状态，并触发开始事件）
     /// </summary>
     /// <param name="newSprites">新的 Sprite 数组</param>
     public void SetSprites(Sprite[] newSprites)
     {
         sprites = newSprites;
-        Restart();
+        Restart(); // Restart 内部会触发 OnAnimationStarted
     }
 
     /// <summary>

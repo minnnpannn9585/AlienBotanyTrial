@@ -23,7 +23,11 @@ public class MainController : SingletonMono<MainController>
     [Header("鼠标对象")]
     public GameObject cursor;
 
+    [Header("关卡解锁数据")]
+    public LevelLockData levelLockData;
+    
     public List<Sprite> cursorState;
+    
     [DllImport("__Internal")]
     private static extern void CloseWindow();
     private bool isOverTarget = false;   // 当前是否在目标 UI 上
@@ -42,13 +46,13 @@ public class MainController : SingletonMono<MainController>
     // Update is called once per frame
     void Update()
     {
-        if (MouseIsRun)
-        {
-            Cursor.visible = false;
-            cursor.transform.position = Input.mousePosition;
-        }
-
-        if (MouseIsRun && isCursorState)
+        // if (MouseIsRun)
+        // {
+        //     Cursor.visible = false;
+        //     cursor.transform.position = Input.mousePosition;
+        // }
+        //
+        if (isCursorState)
         {
             // 每帧检测鼠标下的 UI 并切换鼠标显示状态
             CheckAndSwitchCursor();
@@ -64,6 +68,7 @@ public class MainController : SingletonMono<MainController>
             menu.SetActive(false);
         }
     }
+    
     /// <summary>
     /// 加载UI页面
     /// </summary>
@@ -138,24 +143,7 @@ public class MainController : SingletonMono<MainController>
             isOverTarget = false;
         }
     }
-
-
-    public void CursorActive(bool active)
-    {
-        // 启动时隐藏鼠标
-        Cursor.visible = !active;
-        cursor.gameObject.SetActive(active);
-        MouseIsRun = active;
-    }
     
-    
-    public void SetCursorState(bool state)
-    {
-        isCursorState = state;
-        cursor.GetComponent<Image>().sprite = cursorState[0];
-        cursor.GetComponent<Image>().SetNativeSize();
-        cursor.GetComponent<RectTransform>().pivot = new Vector2(0.1404321f, 0.9798688f);
-    }
     
     public void RestartGame()
     {
@@ -168,9 +156,16 @@ public class MainController : SingletonMono<MainController>
     {
         Cursor.visible = true;
     }
-
+    
+    /// <summary>
+    /// 退出游戏时，解锁所有关卡
+    /// </summary>
     private void OnApplicationQuit()
     {
         Cursor.visible = true;
+        foreach (LevelLock item in levelLockData.AllLevels)
+        {
+            item.IsLock = false;
+        }
     }
 }

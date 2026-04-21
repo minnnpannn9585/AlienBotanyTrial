@@ -83,7 +83,7 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!enableDrag) return;
-        
+        AudioController.Instance.PlayAudioClip(AudioType.DragStartLabel);
         transform.SetParent(ParentGameObject.transform);
 
         if (bringToFrontOnDrag)
@@ -127,7 +127,7 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!enableDrag) return;
-
+        AudioController.Instance.PlayAudioClip(AudioType.DragEndLabel);
         // 恢复透明度
         if (changeAlphaOnDrag && canvasGroup != null)
             canvasGroup.alpha = originalAlpha;

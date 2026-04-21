@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using com.guanayao.Data;
 using DG.Tweening;
+using GuanYao.Tool.Singleton;
 using UnityEngine;
 using UnityEngine.UI;
-public class Botany : MonoBehaviour
+public class Botany : SingletonMono<Botany>
 {
     [Header("游戏核心控制器")]
     public GameController _gameController;
@@ -38,21 +39,21 @@ public class Botany : MonoBehaviour
         _button = GetComponent<Button>();
       
         
-        _finishBtn.onClick.AddListener(() =>
-        {
-            // Left_Page.SetActive(false);
-            // Right_Page.SetActive(false);
-            Left_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
-            Left_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-280,40f), 1f);
-            Right_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
-             Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(260,16f), 1f);
-            Color targetColor = new Color(1f, 1f, 1f, 1f);
-            GameUICanvas.GetComponent<Image>().DOColor(targetColor, 1f);
-            foreach (var item in GetFirstLevelChildren(transform))
-            {
-                Destroy(item);
-            }
-        });
+        // _finishBtn.onClick.AddListener(() =>
+        // {
+        //     // Left_Page.SetActive(false);
+        //     // Right_Page.SetActive(false);
+        //     Left_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
+        //     Left_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-280,40f), 1f);
+        //     Right_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
+        //      Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(260,16f), 1f);
+        //     Color targetColor = new Color(1f, 1f, 1f, 1f);
+        //     GameUICanvas.GetComponent<Image>().DOColor(targetColor, 1f);
+        //     foreach (var item in GetFirstLevelChildren(transform))
+        //     {
+        //         Destroy(item);
+        //     }
+        // });
         
         _imageSpriteAnimation.OnAnimationCompleted.AddListener(() =>
         {
@@ -62,27 +63,38 @@ public class Botany : MonoBehaviour
             });
         });
     }
+
+
+    public void FinishBtnEvent()
+    {
+        Left_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
+        Left_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-280,40f), 1f);
+        Right_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
+        Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(260,16f), 1f);
+        Color targetColor = new Color(1f, 1f, 1f, 1f);
+        GameUICanvas.GetComponent<Image>().DOColor(targetColor, 1f);
+        foreach (var item in GetFirstLevelChildren(transform))
+        {
+            Destroy(item);
+        }
+    }
+    
     
     void ClickFinishBtn()
     {
         // 目标颜色：红色 (R=1, G=0, B=0, A=0.5)
         Color targetColor = new Color(0.3f, 0.3f, 0.3f, 1f);
         GameUICanvas.GetComponent<Image>().DOColor(targetColor, 1f);
+        _button.onClick.RemoveAllListeners();
         transform.DOScale(1f, 1f).SetEase(Ease.InCubic).OnComplete(() =>
         {
-            // Left_Page.SetActive(true);
-            // Right_Page.SetActive(true);
             Left_Page.GetComponent<CanvasGroup>().DOFade(1f, 1f);
             Left_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(264f,40f), 1f);
             Right_Page.GetComponent<CanvasGroup>().DOFade(1f, 1f);
             Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-260,16f), 1f);
-            
             SetLabelActive(true);
-            MainController.Instance.SetCursorState(false);
             RandomGeneration();
-             _button.onClick.RemoveAllListeners();
         });
-       
     }
     
     /// <summary>

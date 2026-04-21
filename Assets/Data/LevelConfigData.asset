@@ -15,69 +15,129 @@ MonoBehaviour:
   LevelDataItems:
   - LevelIndex: 0
     name: "\u7B2C\u4E00\u5173"
-    BotanyIcon: {fileID: 21300000, guid: ba985e2bf91aeb94b8f81c7f1274df5c, type: 3}
+    BotanyIcon: {fileID: 21300000, guid: b08426b2c1e2ab442bd475c1571460f3, type: 3}
     botanyTags:
     - botanyPoison: 0
       sensoryType: 0
-      chineseDescribe: "\u65E0\u523A"
+      chineseDescribe: Thornless
       englishDescribe: 
     - botanyPoison: 1
       sensoryType: 0
-      chineseDescribe: "\u5F00\u82B1\u690D\u7269"
+      chineseDescribe: Flowering
       englishDescribe: 
   - LevelIndex: 1
     name: "\u7B2C\u4E8C\u5173"
-    BotanyIcon: {fileID: 21300000, guid: 074fb39ee0d7347408a3bcf0dc6cf6d8, type: 3}
+    BotanyIcon: {fileID: 21300000, guid: 9c2a7aeb0f6454f499bb5e6d8a52fb37, type: 3}
     botanyTags:
     - botanyPoison: 0
       sensoryType: 0
-      chineseDescribe: "\u7EFF\u8272\u53F6\u7247"
+      chineseDescribe: Green Leaves
       englishDescribe: 
     - botanyPoison: 1
       sensoryType: 0
-      chineseDescribe: "\u6709\u523A"
+      chineseDescribe: Thorny
       englishDescribe: 
   - LevelIndex: 2
     name: "\u7B2C\u4E09\u5173"
-    BotanyIcon: {fileID: 21300000, guid: 5e193c974f7aa6b4c806999c47efdb44, type: 3}
+    BotanyIcon: {fileID: 21300000, guid: 00317c030911cd542a4d3849e914626a, type: 3}
     botanyTags:
     - botanyPoison: 0
       sensoryType: 0
-      chineseDescribe: "\u65E0\u523A"
+      chineseDescribe: Thornless
       englishDescribe: 
     - botanyPoison: 0
       sensoryType: 0
-      chineseDescribe: "\u6709\u679C\u5B9E"
+      chineseDescribe: Fruiting
       englishDescribe: 
     - botanyPoison: 1
       sensoryType: 0
-      chineseDescribe: "\u53D1\u5149"
+      chineseDescribe: Luminescent
       englishDescribe: 
     - botanyPoison: 1
       sensoryType: 1
-      chineseDescribe: "\u9760\u8FD1\u5B83\u9F3B\u5B50\u75D2\u75D2\u7684"
+      chineseDescribe: Nose Irritant
       englishDescribe: 
   - LevelIndex: 3
     name: "\u7B2C\u56DB\u5173"
-    BotanyIcon: {fileID: 21300000, guid: 5332fc8e36608da47933978e22e9db8c, type: 3}
+    BotanyIcon: {fileID: 21300000, guid: 062852ac72b1fe642a964e440c4ac39d, type: 3}
     botanyTags:
     - botanyPoison: 0
       sensoryType: 0
-      chineseDescribe: " \u7EFF\u8272\u53F6\u7247"
+      chineseDescribe: Green Leaves
       englishDescribe: 
     - botanyPoison: 0
       sensoryType: 1
-      chineseDescribe: "\u95FB\u8D77\u6765\u6709\u70B9\u6655"
+      chineseDescribe: Dizzying Scent
       englishDescribe: 
     - botanyPoison: 1
       sensoryType: 1
-      chineseDescribe: "\u9760\u8FD1\u5B83\u9F3B\u5B50\u75D2\u75D2\u7684"
+      chineseDescribe: Nose Irritant
       englishDescribe: 
     - botanyPoison: 1
       sensoryType: 0
-      chineseDescribe: " \u5F00\u82B1\u690D\u7269"
+      chineseDescribe: Flowering
       englishDescribe: 
     - botanyPoison: 1
       sensoryType: 2
-      chineseDescribe: "\u6709\u7C98\u6DB2\u7C98\u5728\u624B\u4E0A"
+      chineseDescribe: Slimy Residue
+      englishDescribe: 
+  - LevelIndex: 4
+    name: "\u7B2C\u4E94\u5173"
+    BotanyIcon: {fileID: 21300000, guid: 7ff362e4e5569644cac3eaf8f2a29304, type: 3}
+    botanyTags:
+    - botanyPoison: 0
+      sensoryType: 2
+      chineseDescribe: Rough Surface
+      englishDescribe: 
+    - botanyPoison: 0
+      sensoryType: 1
+      chineseDescribe: Dizzying Scent
+      englishDescribe: 
+    - botanyPoison: 0
+      sensoryType: 1
+      chineseDescribe: Hint of Caramel
+      englishDescribe: 
+    - botanyPoison: 1
+      sensoryType: 1
+      chineseDescribe: Hint of Fruit
+      englishDescribe: 
+    - botanyPoison: 1
+      sensoryType: 2
+      chineseDescribe: Cold to Touch
+      englishDescribe: 
+    - botanyPoison: 1
+      sensoryType: 0
+      chineseDescribe: Glowing
+      englishDescribe: 
+  - LevelIndex: 5
+    name: "\u7B2C\u516D\u5173"
+    BotanyIcon: {fileID: 21300000, guid: cc39b5a46d0ccdb4180381c0ce61204f, type: 3}
+    botanyTags:
+    - botanyPoison: 0
+      sensoryType: 0
+      chineseDescribe: Thornless
+      englishDescribe: 
+    - botanyPoison: 0
+      sensoryType: 2
+      chineseDescribe: Hot to Touch
+      englishDescribe: 
+    - botanyPoison: 0
+      sensoryType: 0
+      chineseDescribe: Mimicry
+      englishDescribe: 
+    - botanyPoison: 0
+      sensoryType: 0
+      chineseDescribe: Fruiting
+      englishDescribe: 
+    - botanyPoison: 1
+      sensoryType: 2
+      chineseDescribe: Slimy Residue
+      englishDescribe: 
+    - botanyPoison: 1
+      sensoryType: 1
+      chineseDescribe: Hint of Fruit
+      englishDescribe: 
+    - botanyPoison: 1
+      sensoryType: 0
+      chineseDescribe: Curling Tentacles
       englishDescribe: 
