@@ -76,6 +76,19 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         // 示例：监听事件，打印目标名称（可在 Inspector 中绑定，也可代码添加）
         OnDropOnTarget.AddListener((target) =>
         {
+            if (target.transform.childCount >= 1)
+            {
+                GameObject item = target.transform.GetChild(0).gameObject;
+                item.transform.SetParent(Botany.Instance.transform);
+                RectTransform rect = item.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);  // 可选：将物体自身的中心点设为基准点
+                item.GetComponent<RectTransform>().anchoredPosition = 
+                    Botany.Instance.GetComponent<RectTransform>().anchoredPosition;
+                transform.SetParent(target.transform);
+                return;
+            }
             transform.SetParent(target.transform);
         });
     }

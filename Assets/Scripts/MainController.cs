@@ -31,33 +31,49 @@ public class MainController : SingletonMono<MainController>
     [DllImport("__Internal")]
     private static extern void CloseWindow();
     private bool isOverTarget = false;   // 当前是否在目标 UI 上
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     public bool isCursorState = true;
 
     /// <summary>
     /// 是否打开 我们设计的光标手
     /// </summary>
     private bool MouseIsRun = false;
+    
     // Update is called once per frame
     void Update()
     {
-        // if (MouseIsRun)
-        // {
-        //     Cursor.visible = false;
-        //     cursor.transform.position = Input.mousePosition;
-        // }
-        //
+        // 鼠标是否激活
+        if (MouseIsRun)
+        {
+            Cursor.visible = false;
+            cursor.transform.position = Input.mousePosition;
+        }
+        //是否开启切换状态
         if (isCursorState)
         {
             // 每帧检测鼠标下的 UI 并切换鼠标显示状态
             CheckAndSwitchCursor();
         }
     }
+
+    /// <summary>
+    /// 设置鼠标状态的
+    /// </summary>
+    /// <param name="mouseIsRun">是否开启鼠标运行状态</param>
+    /// <param name="IsisCursorState">是否激鼠标和放大镜状态切换</param>
+    public void SetCursorState(bool mouseIsRun, bool IsisCursorState)
+    {
+        cursor.gameObject.SetActive(mouseIsRun);
+        if (!IsisCursorState)
+        {
+            cursor.GetComponent<Image>().sprite = cursorState[0];
+            cursor.GetComponent<Image>().SetNativeSize();
+            cursor.GetComponent<RectTransform>().pivot = new Vector2(0.1404321f, 0.9798688f);
+        }
+        Cursor.visible = !mouseIsRun;
+        MouseIsRun = mouseIsRun;
+        isCursorState = IsisCursorState;
+    }
+    
     /// <summary>
     /// 关闭所有UI
     /// </summary>
@@ -144,14 +160,18 @@ public class MainController : SingletonMono<MainController>
         }
     }
     
-    
+    /// <summary>
+    /// 重新开始游戏
+    /// </summary>
     public void RestartGame()
     {
         // 获取当前场景的名字，然后重新加载它
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     
-    // 防止退出后鼠标仍然隐藏（影响其他程序）
+    /// <summary>
+    /// 防止退出后鼠标仍然隐藏（影响其他程序）
+    /// </summary>
     private void OnDestroy()
     {
         Cursor.visible = true;

@@ -98,6 +98,7 @@ public class ImageSpriteAnimation : MonoBehaviour
         OnAnimationStarted.AddListener(() =>
         {
             AudioController.Instance.PlayGameRunAudio();
+            MainController.Instance.SetCursorState(true,true);
         });
         OnAnimationCompleted.AddListener(() =>
         {

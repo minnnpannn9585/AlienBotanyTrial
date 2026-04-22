@@ -5,18 +5,22 @@ using DG.Tweening;
 using GuanYao.Tool.Singleton;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class Botany : SingletonMono<Botany>
 {
-    [Header("游戏核心控制器")]
+    [Header("游戏核心控制器")] 
     public GameController _gameController;
+
     /// <summary>
     /// 处理动画脚本
     /// </summary>
     public ImageSpriteAnimation _imageSpriteAnimation;
+
     /// <summary>
     /// 无毒卡槽位子
     /// </summary>
     public GameObject Left_Page;
+
     /// <summary>
     /// 有毒卡槽位子
     /// </summary>
@@ -26,51 +30,37 @@ public class Botany : SingletonMono<Botany>
     /// 游戏UI父物体
     /// </summary>
     public GameObject GameUICanvas;
+
+    public GameObject objectPrefab; // 要生成的物体预制体（例如一个圆形 Sprite）
+    public Image boundaryImage; // 用于限定范围的 Image（作为背景或区域指示）
+    public Transform spawnParent; // 生成物体的父物体（可选）
     
     public Button _finishBtn;
     private Button _button;
     private List<GameObject> labelList;
-    
+
     // Start is called before the first frame update
     void Start()
     {
         labelList = new List<GameObject>();
         labelList = GetFirstLevelChildren(transform);
         _button = GetComponent<Button>();
-      
-        
-        // _finishBtn.onClick.AddListener(() =>
-        // {
-        //     // Left_Page.SetActive(false);
-        //     // Right_Page.SetActive(false);
-        //     Left_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
-        //     Left_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-280,40f), 1f);
-        //     Right_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
-        //      Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(260,16f), 1f);
-        //     Color targetColor = new Color(1f, 1f, 1f, 1f);
-        //     GameUICanvas.GetComponent<Image>().DOColor(targetColor, 1f);
-        //     foreach (var item in GetFirstLevelChildren(transform))
-        //     {
-        //         Destroy(item);
-        //     }
-        // });
-        
         _imageSpriteAnimation.OnAnimationCompleted.AddListener(() =>
         {
-            _button.onClick.AddListener(() =>
-            {
-                ClickFinishBtn();
-            });
+            _button.onClick.AddListener(() => { ClickFinishBtn(); });
         });
     }
 
 
+    /// <summary>
+    /// 点击完成事件
+    /// </summary>
     public void FinishBtnEvent()
     {
         Left_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
-        Left_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-280,40f), 1f);
+        Left_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-280, 40f), 1f);
         Right_Page.GetComponent<CanvasGroup>().DOFade(0f, 1f);
-        Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(260,16f), 1f);
+        Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(260, 16f), 1f);
         Color targetColor = new Color(1f, 1f, 1f, 1f);
         GameUICanvas.GetComponent<Image>().DOColor(targetColor, 1f);
         foreach (var item in GetFirstLevelChildren(transform))
@@ -78,10 +68,11 @@ public class Botany : SingletonMono<Botany>
             Destroy(item);
         }
     }
-    
-    
+
+
     void ClickFinishBtn()
     {
+        MainController.Instance.SetCursorState(true, false);
         // 目标颜色：红色 (R=1, G=0, B=0, A=0.5)
         Color targetColor = new Color(0.3f, 0.3f, 0.3f, 1f);
         GameUICanvas.GetComponent<Image>().DOColor(targetColor, 1f);
@@ -89,20 +80,20 @@ public class Botany : SingletonMono<Botany>
         transform.DOScale(1f, 1f).SetEase(Ease.InCubic).OnComplete(() =>
         {
             Left_Page.GetComponent<CanvasGroup>().DOFade(1f, 1f);
-            Left_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(264f,40f), 1f);
+            Left_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(264f, 40f), 1f);
             Right_Page.GetComponent<CanvasGroup>().DOFade(1f, 1f);
-            Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-260,16f), 1f);
+            Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-260, 16f), 1f);
             SetLabelActive(true);
             RandomGeneration();
         });
     }
-    
+
     /// <summary>
     /// 获取当前物体的 所有一级子物体（只第一层，不递归）
     /// </summary>
     /// <param name="parent">父物体</param>
     /// <returns>一级子物体 GameObject 列表</returns>
-    public static List<GameObject> GetFirstLevelChildren(Transform parent)
+    public List<GameObject> GetFirstLevelChildren(Transform parent)
     {
         // 创建空列表
         List<GameObject> childList = new List<GameObject>();
@@ -119,7 +110,7 @@ public class Botany : SingletonMono<Botany>
 
         return childList;
     }
-    
+
     void SetLabelActive(bool active)
     {
         foreach (GameObject label in labelList)
@@ -127,134 +118,174 @@ public class Botany : SingletonMono<Botany>
             label.SetActive(active);
         }
     }
-    
-    public GameObject objectPrefab;   // 要生成的物体预制体（例如一个圆形 Sprite）
-    public Image boundaryImage;       // 用于限定范围的 Image（作为背景或区域指示）
-    public Transform spawnParent;     // 生成物体的父物体（可选）
-    public float objectRadius = 0.5f; // 物体半径（根据实际物体大小调整）
-    
+
+  
+    /// <summary>
+    /// 解锁关卡数据
+    /// </summary>
     public LevelDataItem currentLevelDataItem;
+
+    /// <summary>
+    /// 随机函数
+    /// </summary>
     void RandomGeneration()
     {
         currentLevelDataItem = _gameController.currentLevelDataItem;
-        
-        // 在 Image 范围内生成 10 个不重叠的物体
-        List<GameObject> spawned = GenerateNonOverlapObjectsInImage(
-            prefab: objectPrefab,
-            parent: spawnParent,
-            image: boundaryImage,
-            count: currentLevelDataItem.botanyTags.Count,
-            radius: objectRadius,
-            maxAttempts: 5000
-        );
+        List<GameObject> spawned = GenerateNonOverlapUI(
+            objectPrefab,
+            spawnParent,
+            GetWorldRectFromImage(boundaryImage),
+            currentLevelDataItem.botanyTags.Count);
 
         Debug.Log($"成功生成 {spawned.Count} 个物体");
     }
-    
-    /// <summary>
-    /// 在 Image 组件所占据的世界坐标矩形范围内生成指定数量的不重叠物体
+
+
+    #region  随机函数计算封装
+
+       /// <summary>
+    /// 在指定矩形区域内生成不重叠的 UI 物体（自动根据物体实际尺寸避免重叠）
     /// </summary>
-    /// <param name="prefab">要生成的物体预制体</param>
-    /// <param name="parent">生成的物体的父物体（可为 null）</param>
-    /// <param name="image">用于界定生成区域的 Image 组件</param>
-    /// <param name="count">需要生成的物体数量</param>
-    /// <param name="radius">每个物体的半径（假设为圆形，用于碰撞检测和边界约束）</param>
-    /// <param name="maxAttempts">单个物体的最大随机尝试次数，防止死循环</param>
-    /// <returns>成功生成的物体列表（数量可能小于 count，当区域无法容纳时）</returns>
-    public  List<GameObject> GenerateNonOverlapObjectsInImage(GameObject prefab, 
-        Transform parent, Image image, int count, float radius, int maxAttempts = 1000)
+    /// <param name="prefab">预制体（必须带有 RectTransform 或 Renderer）</param>
+    /// <param name="parent">父物体（Canvas 或其它）</param>
+    /// <param name="worldRect">世界坐标系下的矩形区域 (xMin, yMin, xMax, yMax)</param>
+    /// <param name="count">要生成的数量</param>
+    /// <param name="maxAttempts">最大尝试次数（默认 500）</param>
+    /// <returns>生成的物体列表（数量不足时返回实际生成的列表，并输出错误）</returns>
+    public List<GameObject> GenerateNonOverlapUI(GameObject prefab, Transform parent,
+        Rect worldRect, int count, int maxAttempts = 500)
     {
-        // 获取 Image 的世界坐标矩形区域
-        Rect worldRect = GetWorldRectFromImage(image);
-        // 调用核心生成函数
-        return GenerateNonOverlapObjectsInWorldRect(prefab, parent, worldRect, count, radius, maxAttempts);
+        List<GameObject> results = new List<GameObject>();
+
+        // 1. 获取物体的实际尺寸（宽/高）
+        Vector2 objectSize = GetObjectSize(prefab);
+        float width = objectSize.x;
+        float height = objectSize.y;
+
+        // 2. 计算中心点的活动范围（保证物体完全在矩形内）
+        float xMin = worldRect.xMin + width / 2f;
+        float xMax = worldRect.xMax - width / 2f;
+        float yMin = worldRect.yMin + height / 2f;
+        float yMax = worldRect.yMax - height / 2f;
+
+        if (xMin >= xMax || yMin >= yMax)
+        {
+            Debug.LogError($"区域太小，无法放下尺寸为 {width}×{height} 的物体！");
+            return results;
+        }
+
+        // 3. 预先生成所有不重叠的位置（不实例化）
+        List<Vector2> positions = TryGeneratePositions(xMin, xMax, yMin, yMax,
+            width, height, count, maxAttempts);
+
+        if (positions == null || positions.Count < count)
+        {
+            Debug.LogError($"尝试 {maxAttempts} 次后，只能生成 {positions?.Count ?? 0} 个不重叠物体，目标数量 {count}");
+            return results;
+        }
+
+        // 4. 位置已确定，批量实例化
+        float originalZ = prefab.transform.position.z;
+        for (int i = 0; i < positions.Count; i++)
+        {
+            Vector3 worldPos = new Vector3(positions[i].x, positions[i].y, originalZ);
+            GameObject obj = Instantiate(prefab, worldPos, Quaternion.identity, parent);
+            BotanyTagData dataItem = currentLevelDataItem.botanyTags[i];
+            LabelInformation labelInfo = obj.GetComponent<LabelInformation>();
+            labelInfo.SetIcon((BotanyPoisonousType)dataItem.botanyPoison,
+                (SensoryType)dataItem.sensoryType, dataItem.chineseDescribe);
+            results.Add(obj);
+        }
+        return results;
     }
 
     /// <summary>
-    /// 在指定的世界坐标矩形区域内生成不重叠物体（核心实现）
+    /// 获取物体在世界空间中的尺寸（支持 RectTransform 或普通 Renderer）
     /// </summary>
-    /// <param name="prefab">预制体</param>
-    /// <param name="parent">父物体</param>
-    /// <param name="worldRect">世界坐标下的矩形区域 (xMin, yMin, xMax, yMax)</param>
-    /// <param name="count">目标数量</param>
-    /// <param name="radius">物体半径</param>
-    /// <param name="maxAttempts">单个物体最大尝试次数</param>
-    /// <returns>实际生成的物体列表</returns>
-    public List<GameObject> GenerateNonOverlapObjectsInWorldRect(GameObject prefab, 
-        Transform parent, Rect worldRect, int count, float radius, int maxAttempts = 1000)
+    private Vector2 GetObjectSize(GameObject obj)
     {
-        List<GameObject> generatedObjects = new List<GameObject>();
-        List<Vector2> usedPositions = new List<Vector2>();  // 记录已生成的物体中心点
-
-        float minDistance = radius * 2f;  // 两个物体中心点之间的最小距离
-
-        // 边界约束：物体中心点可活动的范围（需保证整个物体在矩形内）
-        float xMin = worldRect.xMin + radius;
-        float xMax = worldRect.xMax - radius;
-        float yMin = worldRect.yMin + radius;
-        float yMax = worldRect.yMax - radius;
-
-        // 检查区域是否足够大（即使一个物体也无法放置）
-        if (xMin >= xMax || yMin >= yMax)
+        RectTransform rect = obj.GetComponent<RectTransform>();
+        if (rect != null)
         {
-            Debug.LogError($"生成区域过小，无法容纳半径为 {radius} 的物体！区域范围：{worldRect}");
-            return generatedObjects;
+            // UI 元素：宽高取自 sizeDelta（需确保 Canvas 缩放模式正确）
+            return rect.sizeDelta;
         }
 
-        // 尝试生成指定数量的物体
-        for (int i = 0; i < count; i++)
+        Renderer renderer = obj.GetComponent<Renderer>();
+        if (renderer != null)
         {
-            bool placed = false;
-            for (int attempt = 0; attempt < maxAttempts; attempt++)
-            {
-                // 随机生成一个在边界内的中心点
-                float x = Random.Range(xMin, xMax);
-                float y = Random.Range(yMin, yMax);
-                Vector2 candidate = new Vector2(x, y);
+            // 3D 物体：取包围盒的宽高
+            Bounds bounds = renderer.bounds;
+            return new Vector2(bounds.size.x, bounds.size.y);
+        }
 
-                // 检查是否与已有物体重叠
-                bool overlap = false;
-                foreach (Vector2 pos in usedPositions)
+        // 保底默认值（可自行调整）
+        Debug.LogWarning($"预制体 {obj.name} 没有 RectTransform 或 Renderer，默认尺寸 20×20");
+        return new Vector2(20f, 20f);
+    }
+
+    /// <summary>
+    /// 尝试生成一组不重叠的中心点坐标（预生成，不实例化）
+    /// </summary>
+    private List<Vector2> TryGeneratePositions(float xMin, float xMax, float yMin, float yMax,
+        float width, float height, int count, int maxAttempts)
+    {
+        List<Vector2> positions = new List<Vector2>();
+        float minDistanceX = width; // 中心点最小水平间距
+        float minDistanceY = height; // 中心点最小垂直间距
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            positions.Clear();
+            bool allPlaced = true;
+
+            for (int i = 0; i < count; i++)
+            {
+                bool placed = false;
+                for (int sub = 0; sub < 100; sub++) // 每个点单独尝试100次
                 {
-                    if (Vector2.Distance(candidate, pos) < minDistance)
+                    float x = Random.Range(xMin, xMax);
+                    float y = Random.Range(yMin, yMax);
+                    Vector2 candidate = new Vector2(x, y);
+
+                    bool overlap = false;
+                    foreach (Vector2 p in positions)
                     {
-                        overlap = true;
+                        if (Mathf.Abs(candidate.x - p.x) < minDistanceX &&
+                            Mathf.Abs(candidate.y - p.y) < minDistanceY)
+                        {
+                            overlap = true;
+                            break;
+                        }
+                    }
+
+                    if (!overlap)
+                    {
+                        positions.Add(candidate);
+                        placed = true;
                         break;
                     }
                 }
 
-                if (!overlap)
+                if (!placed)
                 {
-                    // 不重叠，生成物体
-                    // 保持预制体原有的 Z 坐标（可自行调整，例如设为 0 或 parent 的 Z）
-                    float originalZ = prefab.transform.position.z;
-                    Vector3 worldPosition = new Vector3(candidate.x, candidate.y, originalZ);
-                    GameObject obj = Instantiate(prefab, worldPosition, Quaternion.identity, parent);
-                    BotanyTagData dataItem = currentLevelDataItem.botanyTags[i];
-                    LabelInformation labelInfo = obj.GetComponent<LabelInformation>();
-                    labelInfo.SetIcon((BotanyPoisonousType)dataItem.botanyPoison,
-                        (SensoryType)dataItem.sensoryType,dataItem.chineseDescribe);
-                    generatedObjects.Add(obj);
-                    usedPositions.Add(candidate);
-                    placed = true;
+                    allPlaced = false;
                     break;
                 }
             }
 
-            if (!placed)
-            {
-                Debug.LogWarning($"仅成功生成 {generatedObjects.Count} / {count} 个物体。可能区域已满或尝试次数不足。");
-                break;
-            }
+            if (allPlaced && positions.Count == count)
+                return positions;
         }
 
-        return generatedObjects;
+        return null;
     }
+    
 
     /// <summary>
     /// 获取 Image 组件在世界坐标系下的轴对齐矩形范围（假设 Image 无旋转）
     /// </summary>
-    private  Rect GetWorldRectFromImage(Image image)
+    private Rect GetWorldRectFromImage(Image image)
     {
         if (image == null)
         {
@@ -264,7 +295,7 @@ public class Botany : SingletonMono<Botany>
 
         RectTransform rectTransform = image.rectTransform;
         Vector3[] corners = new Vector3[4];
-        rectTransform.GetWorldCorners(corners);  // 顺序：左下、左上、右上、右下
+        rectTransform.GetWorldCorners(corners); // 顺序：左下、左上、右上、右下
 
         // 计算最小最大值（形成轴对齐包围盒）
         float minX = Mathf.Min(corners[0].x, corners[1].x, corners[2].x, corners[3].x);
@@ -274,4 +305,5 @@ public class Botany : SingletonMono<Botany>
 
         return Rect.MinMaxRect(minX, minY, maxX, maxY);
     }
+    #endregion
 }
