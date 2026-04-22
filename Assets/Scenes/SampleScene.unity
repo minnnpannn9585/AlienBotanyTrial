@@ -3665,11 +3665,10 @@ MonoBehaviour:
   Left_Page: {fileID: 974711020}
   Right_Page: {fileID: 129133403}
   GameUICanvas: {fileID: 1367237428}
-  _finishBtn: {fileID: 1944670935}
   objectPrefab: {fileID: 7893137948590959393, guid: 24cf383d44bba89479c5f9fa69374696, type: 3}
   boundaryImage: {fileID: 239297402}
   spawnParent: {fileID: 1073920742}
-  objectRadius: 60
+  _finishBtn: {fileID: 1944670935}
   currentLevelDataItem:
     LevelIndex: 0
     name: 

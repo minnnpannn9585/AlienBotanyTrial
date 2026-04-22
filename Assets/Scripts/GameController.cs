@@ -60,9 +60,13 @@ public class GameController : MonoBehaviour
     /// </summary>
     public void NextTask()
     {
-        PoisonousCalculate();
+        // 先判断是否已经中毒了 如果中毒 则直接死亡 
+        if (!PoisonousCalculate())
+            return;
+       
         LocalSave();
         currentTaskIndex++;
+        
         if (currentTaskIndex >= levelConfigData.LevelDataItems.Count)
         {
             // paymentPage.SetActive(true);
@@ -112,11 +116,12 @@ public class GameController : MonoBehaviour
             MainController.Instance.LoadMenu(4);
         }
     }
-    
+
+    private bool minorPoisoning = true;
     /// <summary>
     /// 一轮中毒结算
     /// </summary>
-    void PoisonousCalculate()
+    bool PoisonousCalculate()
     {
         foreach (var item in GetFirstLevelChildren(Left_Page.transform.GetChild(0)))
         {
@@ -140,13 +145,14 @@ public class GameController : MonoBehaviour
         }
 
         // 检查是否轻微中毒
-        if (poisonousCount == 1)
+        if (poisonousCount == 1 && minorPoisoning)
         {
             EnterPoisonous.DOFade(1f, 1f);
             EnterPoisonous.DOColor(Color.red, poisonousTime)
                 .SetEase(Ease.InOutSine)      // 建议使用平滑的缓动曲线，OutBack 回弹感较强
                 .SetLoops(-1, LoopType.Yoyo);  // -1 表示无限循环，Yoyo 表示来回往返
             AudioController.Instance.PlayAudioClip(AudioType.Poisoning);
+            minorPoisoning = false;
         }
         
         // 检查是否中毒
@@ -156,6 +162,7 @@ public class GameController : MonoBehaviour
             Debug.Log("中毒了");
             AudioController.Instance.PlayAudioClip(AudioType.Lose);
             MainController.Instance.LoadMenu(5);
+            return false;
         }
 
         if (Poisonousthreshold > poisonousCount)
@@ -163,8 +170,8 @@ public class GameController : MonoBehaviour
             // 未中毒
             Debug.Log("未中毒");
         }
-
-        Debug.Log("poisonousCount:" + poisonousCount);
+        // Debug.Log("poisonousCount:" + poisonousCount);
+        return true;
     }
     
     [Header("关卡解锁数据")]
