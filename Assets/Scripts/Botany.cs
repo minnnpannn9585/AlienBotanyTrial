@@ -5,6 +5,7 @@ using DG.Tweening;
 using GuanYao.Tool.Singleton;
 using UnityEngine;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;  // 引用命名空间
 
 public class Botany : SingletonMono<Botany>
 {
@@ -63,10 +64,10 @@ public class Botany : SingletonMono<Botany>
         Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(260, 16f), 1f);
         Color targetColor = new Color(1f, 1f, 1f, 1f);
         GameUICanvas.GetComponent<Image>().DOColor(targetColor, 1f);
-        foreach (var item in GetFirstLevelChildren(transform))
-        {
-            Destroy(item);
-        }
+        // foreach (var item in GetFirstLevelChildren(transform))
+        // {
+        //     Destroy(item);
+        // }
     }
 
 
@@ -84,7 +85,8 @@ public class Botany : SingletonMono<Botany>
             Right_Page.GetComponent<CanvasGroup>().DOFade(1f, 1f);
             Right_Page.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-260, 16f), 1f);
             SetLabelActive(true);
-            RandomGeneration();
+            SetTag();
+            // RandomGeneration();
         });
     }
 
@@ -125,12 +127,33 @@ public class Botany : SingletonMono<Botany>
     /// </summary>
     public LevelDataItem currentLevelDataItem;
 
+
+    [Header("所有关卡标签")]
+    public List<GameObject> TaskTagLists = new List<GameObject>();
+    public void SetTag()
+    {
+        foreach (var item in TaskTagLists)
+        {
+            item.SetActive(false);
+        }
+        TaskTagLists[_gameController.currentTaskIndex].SetActive(true);
+    }
+    
+    
+
+    #region  随机函数计算封装
+    
+    [Header("关卡数据配置")]
+    public LevelConfigData levelConfigData;
+    
     /// <summary>
     /// 随机函数
     /// </summary>
-    void RandomGeneration()
+    [Button]
+    public void RandomGeneration()
     {
-        currentLevelDataItem = _gameController.currentLevelDataItem;
+        // currentLevelDataItem = _gameController.currentLevelDataItem;
+        currentLevelDataItem =  levelConfigData.LevelDataItems[5];
         List<GameObject> spawned = GenerateNonOverlapUI(
             objectPrefab,
             spawnParent,
@@ -139,11 +162,8 @@ public class Botany : SingletonMono<Botany>
 
         Debug.Log($"成功生成 {spawned.Count} 个物体");
     }
-
-
-    #region  随机函数计算封装
-
-       /// <summary>
+    
+    /// <summary>
     /// 在指定矩形区域内生成不重叠的 UI 物体（自动根据物体实际尺寸避免重叠）
     /// </summary>
     /// <param name="prefab">预制体（必须带有 RectTransform 或 Renderer）</param>
