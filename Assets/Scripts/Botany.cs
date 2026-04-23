@@ -153,7 +153,7 @@ public class Botany : SingletonMono<Botany>
     /// <param name="maxAttempts">最大尝试次数（默认 500）</param>
     /// <returns>生成的物体列表（数量不足时返回实际生成的列表，并输出错误）</returns>
     public List<GameObject> GenerateNonOverlapUI(GameObject prefab, Transform parent,
-        Rect worldRect, int count, int maxAttempts = 500)
+        Rect worldRect, int count, int maxAttempts = 50000)
     {
         List<GameObject> results = new List<GameObject>();
 
@@ -176,7 +176,7 @@ public class Botany : SingletonMono<Botany>
 
         // 3. 预先生成所有不重叠的位置（不实例化）
         List<Vector2> positions = TryGeneratePositions(xMin, xMax, yMin, yMax,
-            width, height, count, maxAttempts);
+            width, height, count);
 
         if (positions == null || positions.Count < count)
         {
@@ -228,13 +228,13 @@ public class Botany : SingletonMono<Botany>
     /// 尝试生成一组不重叠的中心点坐标（预生成，不实例化）
     /// </summary>
     private List<Vector2> TryGeneratePositions(float xMin, float xMax, float yMin, float yMax,
-        float width, float height, int count, int maxAttempts)
+        float width, float height, int count)
     {
         List<Vector2> positions = new List<Vector2>();
-        float minDistanceX = width; // 中心点最小水平间距
+        float minDistanceX = width;  // 中心点最小水平间距
         float minDistanceY = height; // 中心点最小垂直间距
 
-        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        while (true)  // 无限尝试，直到全部放置成功
         {
             positions.Clear();
             bool allPlaced = true;
@@ -270,15 +270,13 @@ public class Botany : SingletonMono<Botany>
                 if (!placed)
                 {
                     allPlaced = false;
-                    break;
+                    break;  // 当前点放置失败，跳出内层循环，重新开始新一轮尝试
                 }
             }
 
             if (allPlaced && positions.Count == count)
-                return positions;
+                return positions;  // 成功，返回结果
         }
-
-        return null;
     }
     
 
