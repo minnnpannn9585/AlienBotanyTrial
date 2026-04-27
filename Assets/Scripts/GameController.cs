@@ -131,7 +131,6 @@ public class GameController : MonoBehaviour
                 if (item.GetComponentInChildren<LabelInformation>().IsPoisonous)
                 {
                     poisonousCount++;
-                    Debug.Log("AAA");
                 }
                    
                 Destroy(temp.gameObject);
@@ -145,7 +144,6 @@ public class GameController : MonoBehaviour
                 if (item.GetComponentInChildren<LabelInformation>().IsPoisonous)
                 {
                     poisonousCount++;
-                    Debug.Log("BBB");
                 }
                    
                 Destroy(temp.gameObject);
@@ -162,6 +160,10 @@ public class GameController : MonoBehaviour
             AudioController.Instance.PlayAudioClip(AudioType.Poisoning);
             minorPoisoning = false;
         }
+        else
+        {
+            AudioController.Instance.PlayAudioClip(AudioType.Finish);
+        }
         
         // 检查是否中毒
         if (poisonousCount >= Poisonousthreshold)
@@ -177,7 +179,6 @@ public class GameController : MonoBehaviour
         {
             // 未中毒
             Debug.Log("未中毒");
-            AudioController.Instance.PlayAudioClip(AudioType.Finish);
         }
         return true;
     }
