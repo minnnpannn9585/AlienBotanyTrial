@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -37,7 +38,12 @@ public class MainController : SingletonMono<MainController>
     /// 是否打开 我们设计的光标手
     /// </summary>
     private bool MouseIsRun = false;
-    
+
+    private void Start()
+    {
+        PlotBingdingEvent();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -103,6 +109,7 @@ public class MainController : SingletonMono<MainController>
         PlotNext.onClick.AddListener(() =>
         {
             LoadMenu(2);
+            AudioController.Instance.StopPlotBackgroundAudio();
         });
     }
 

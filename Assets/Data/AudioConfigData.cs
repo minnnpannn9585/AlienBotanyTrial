@@ -30,7 +30,8 @@ public enum AudioType
     Poisoning,
     Succeed,
     Lose,
-    Run
+    Run,
+    Finish
 }
 
 [Serializable]

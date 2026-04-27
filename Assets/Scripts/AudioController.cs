@@ -27,12 +27,30 @@ public class AudioController : SingletonMono<AudioController>
         audioSource.Play();
     }
     
+    // /// <summary>
+    // /// 播放剧情背景音乐
+    // /// </summary>
+    // public void PlayPlotBackgroundAudio()
+    // {
+    //     PlayAudioClip(AudioType.PlotBackground);
+    // }
+    
     /// <summary>
-    /// 播放剧情背景音乐
+    /// 播放走的音效
     /// </summary>
     public void PlayPlotBackgroundAudio()
     {
-        PlayAudioClip(AudioType.PlotBackground);
+        mainCameraAudioSource.clip = GetAudioSource(AudioType.PlotBackground);
+        mainCameraAudioSource.volume = audioConfigData.BGvolume;
+        mainCameraAudioSource.Play();
+    }
+    
+    /// <summary>
+    /// 播放走的音效
+    /// </summary>
+    public void StopPlotBackgroundAudio()
+    {
+        mainCameraAudioSource.Stop();
     }
     
     
